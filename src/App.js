@@ -10,6 +10,7 @@ import Product from './pages/Product';
 import Register from './pages/Register';
 import Login from './pages/Login.jsx';
 import Cart from './pages/Cart';
+import Navbar from './components/Navbar';
 
 
 class App extends Component {
@@ -20,6 +21,7 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
+          <Navbar/>
           <Routes>
               <Route exact path='/' element={<Home/>} />
               <Route path='/productlist' element={<ProductList/>} />
