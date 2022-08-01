@@ -1,10 +1,11 @@
 import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Badge } from "antd";
-import React, { useState } from "react";
+import React, { Component } from "react";
 import styled from 'styled-components';
 import { mobile, tablet } from "../responsive";
 import { Link } from "react-router-dom";
-import { auth, signOutUser } from "../firebase/firebase.utils";
+import {auth } from "../firebase/firebase.utils";
+
 
 //Styling With Styled Components
 const Container = styled.div`
@@ -78,33 +79,37 @@ const MenuItem = styled.div`
 
 //Navbar component starts here
 
-
-
-const Navbar = () => {
-    //Using useState: Google auth popup not working
-    const [isShow, setShow] = useState();
-    const handleToggle = () => {
-        setShow(isShow);
-      };
-      const CustomMenuItem = () => {
-        return (
-          <div 
-            onClick={signOutUser}
-            type="button"
-            style={{
-                fontSize: '16px',
-                cursor:'pointer',
-                marginLeft: '25px',
-            }} >
-                {'Log Out'}
-          </div>
-        );
-      };
-    
-      
-
-    
+const CustomMenuItem = () => {
     return (
+      <div 
+        onClick={() => auth.signOut()}
+        type="button"
+        style={{
+            fontSize: '16px',
+            cursor:'pointer',
+            marginLeft: '25px',
+        }} >
+            {'Sign Out'}
+      </div>
+    );
+  };
+
+class Navbar extends Component {
+    constructor(){
+        super()
+
+        this.state={
+            signOut:''
+        }
+    }
+
+    componentDidMount() {
+        this.setState({signOut:true})
+    }
+    
+    
+    render(){
+        return (
         <Container>
             {/*NAVBAR*/}
             <Wrapper>
@@ -126,14 +131,14 @@ const Navbar = () => {
                     <div>
                     {
                         auth.currentUser ?
-                        <div>
-                            <CustomMenuItem onClick={handleToggle}/>
-                        </div>
+                        (<div>
+                            <CustomMenuItem onClick={this.state.signOut}/>
+                        </div>)
                         :
-                        <div style={{display:'flex', flexDirection:'row'}}>
+                        (<div style={{display:'flex', flexDirection:'row'}}>
                             <MenuItem><Link to='/register'>Register</Link></MenuItem>
                             <MenuItem><Link to='/login'>Sign In</Link></MenuItem>
-                        </div>
+                        </div>)
 
                     }
                     </div>
@@ -147,5 +152,6 @@ const Navbar = () => {
         </Container>
     );
 };
+}
 
 export default Navbar;

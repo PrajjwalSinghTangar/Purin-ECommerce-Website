@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { Component } from "react";
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "../firebase/firebase.utils";
-//import Navbar from "../components/Navbar";
-
+import { auth, createUserProfileDocument } from "../firebase/firebase.utils";
 import { mobile, tablet } from "../responsive";
 
 const Container = styled.div`
@@ -61,86 +58,86 @@ const Button = styled.button`
     cursor: pointer;
 `;
 
-const defaultFormFields = {
-  displayName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-};
 
+class Register extends Component {
+  constructor() {
+    super();
 
-const Register = ({currentUser}) => {
-  const [formFields, setFormFields] = useState(defaultFormFields);
-  const { displayName, email, password, confirmPassword } = formFields;
+    this.state = {
+      displayName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
+  }
 
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-  };
-
-  const handleSubmit = async (event) => {
+  handleSubmit = async event => {
     event.preventDefault();
 
+    const { displayName, email, password, confirmPassword } = this.state;
+
     if (password !== confirmPassword) {
-      alert("passwords do not match");
+      alert("passwords don't match");
       return;
     }
 
     try {
-      const { user } = await createAuthUserWithEmailAndPassword(
+      const { user } = await auth.createUserWithEmailAndPassword(
         email,
         password
       );
 
-      await createUserDocumentFromAuth(user, { displayName });
-      resetFormFields();
+      await createUserProfileDocument(user, { displayName });
+
+      this.setState({
+        displayName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      });
     } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        alert("Cannot create user, email already in use");
-      } else {
-        console.log("user creation encountered an error", error);
-      }
+      console.error(error);
     }
   };
 
-  const handleChange = (event) => {
+  handleChange = event => {
     const { name, value } = event.target;
 
-    setFormFields({ ...formFields, [name]: value });
+    this.setState({ [name]: value });
   };
 
-        return (
+         render(){return (
         <div>
-            <Navbar currentUser={currentUser}/>
             <Container>
             <Wrapper>
                 <Title>I Do Not Have A Account</Title>
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={this.handleSubmit}>
                     <Input 
                         type='text'
                         name='displayName'
-                        value={displayName}
-                        onChange={handleChange}
+                        value={this.displayName}
+                        onChange={this.handleChange}
                         placeholder='Display Name'
                         required/>
                     <Input 
                         type='email'
                         name='email'
-                        value={email}
-                        onChange={handleChange}
+                        value={this.email}
+                        onChange={this.handleChange}
                         placeholder='Email'
                         required/>
                     <Input 
                         type='password'
                         name='password'
-                        value={password}
-                        onChange={handleChange}
+                        value={this.password}
+                        onChange={this.handleChange}
                         placeholder='Password'
                         required/>
                     <Input 
                         type='password'
                         name='confirmPassword'
-                        value={confirmPassword}
-                        onChange={handleChange}
+                        value={this.confirmPassword}
+                        onChange={this.handleChange}
                         placeholder='Confirm Password'
                         required/>
                     <Aggrement>
@@ -155,5 +152,6 @@ const Register = ({currentUser}) => {
 
         );
   }
+}
 
 export default Register;

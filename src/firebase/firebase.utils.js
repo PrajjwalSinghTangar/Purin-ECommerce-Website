@@ -1,28 +1,8 @@
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  signInWithRedirect,
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  writeBatch,
-  query,
-  getDocs,
-} from "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 
-// use your own config
-// I used env but it's not necessary, just paste the config you get from firebase console
-const firebaseConfig = {
+const config = {
   apiKey: "AIzaSyCCN-8lPEVP_xL4W_9xjuUB7nFycTJx3FI",
   authDomain: "purin-ecommerceapi.firebaseapp.com",
   projectId: "purin-ecommerceapi",
@@ -32,95 +12,38 @@ const firebaseConfig = {
   measurementId: "G-B6MDWTFBNE"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
+firebase.initializeApp(config);
 
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({
-  promp: "select_account",
-});
-
-export const auth = getAuth();
-export const signInWithGooglePopup = () =>
-  signInWithPopup(auth, googleProvider);
-export const signInWithGoogleRedirect = () =>
-  signInWithRedirect(auth, googleProvider);
-
-export const db = getFirestore();
-
-export const addCollectionAndDocuments = async (
-  collectionKey,
-  objectsToAdd
-) => {
-  const batch = writeBatch(db);
-  const collectionRef = collection(db, collectionKey);
-
-  objectsToAdd.forEach((object) => {
-    const docRef = doc(collectionRef, object.title.toLowerCase());
-    batch.set(docRef, object);
-  });
-
-  await batch.commit();
-  console.log("done");
-};
-
-export const getCategoriesAndDocuments = async () => {
-  const collectionRef = collection(db, "categories");
-  const q = query(collectionRef);
-
-  const querySnapshot = await getDocs(q);
-  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
-    const { title, items } = docSnapshot.data();
-    acc[title.toLowerCase()] = items;
-    return acc;
-  }, {});
-
-  return categoryMap;
-};
-
-export const createUserDocumentFromAuth = async (
-  userAuth,
-  additionalInformation = {}
-) => {
+export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
-  const userDocRef = doc(db, "users", userAuth.uid);
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
 
-  const userSnapshot = await getDoc(userDocRef);
+  const snapShot = await userRef.get();
 
-  if (!userSnapshot.exists()) {
+  if (!snapShot.exists) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
-
     try {
-      await setDoc(userDocRef, {
+      await userRef.set({
         displayName,
         email,
         createdAt,
-        ...additionalInformation,
+        ...additionalData
       });
     } catch (error) {
-      console.log("error creating the user", error.message);
+      console.log('error creating user', error.message);
     }
   }
 
-  return userDocRef;
+  return userRef;
 };
 
-export const createAuthUserWithEmailAndPassword = async (email, password) => {
-  if (!email || !password) return;
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
 
-  return await createUserWithEmailAndPassword(auth, email, password);
-};
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
-export const signInAuthUserWithEmailAndPassword = async (email, password) => {
-  if (!email || !password) return;
-
-  return await signInWithEmailAndPassword(auth, email, password);
-};
-
-export const signOutUser = async () => await signOut(auth);
-
-export const onAuthStateChangedListener = (callback) =>
-  onAuthStateChanged(auth, callback);
-
-export default firebaseApp;
+export default firebase;

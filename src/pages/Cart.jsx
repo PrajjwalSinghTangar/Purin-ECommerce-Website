@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { mobile,tablet } from "../responsive";
@@ -168,7 +167,6 @@ const Button = styled.button`
 const Cart = ({currentUser}) => {
     return (
         <Container>
-            <Navbar currentUser={currentUser}/>
             <Announcement/>
             <Wrapper>
                 <Title>YOUR BAG</Title>

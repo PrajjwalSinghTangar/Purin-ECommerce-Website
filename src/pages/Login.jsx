@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
 import { mobile,tablet } from "../responsive";
 import { Outlet } from "react-router-dom";
-import { signInAuthUserWithEmailAndPassword, signInWithGoogleRedirect } from "../firebase/firebase.utils";
-import { useState } from "react";
+import { auth, signInWithGoogle} from "../firebase/firebase.utils";
+import { Component } from "react";
+
 
 const Container = styled.div`
     width: 100vw;
@@ -66,90 +66,89 @@ const Link = styled.a`
     cursor: pointer;
 `;
 
-const defaultFormFields = {
-    email: "",
-    password: "",
-  };
-
-
-const Login = () => {
-    //login
-    const [formFields, setFormFields] = useState(defaultFormFields);
-    const { email, password } = formFields;
-
-    const resetFormFields = () => {
-        setFormFields(defaultFormFields);
-      };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+const GoogleButton = () => {
+  return (  
+            <button 
+              onClick={signInWithGoogle} 
+              type="button"
+              style={{
+                  width: '40%',
+                  border:'none',
+                  padding: '15px 20px',
+                  backgroundColor:'teal',
+                  color:'white',
+                  cursor: 'pointer',
+                  marginBottom:'5px',
+              }} >
+                  {'GOOGLE SIGN IN'}
+            </button>
+          );
+};
     
-        try {
-          await signInAuthUserWithEmailAndPassword(email, password);
-          resetFormFields();
-        } catch (error) {
-          console.log("user sign in failed", error);
+
+
+class Login extends Component {
+    constructor(){
+    super()
+
+    this.state={
+      googlePopup:'',
+      email: '',
+      password: ''
+      }
+    }
+
+    componentDidMount() {
+      //google Popup
+      this.setState({googlePopup:true})
+    }
+    
+    //email 
+    handleSubmit = async event => {
+      event.preventDefault();
+  
+      const { email, password } = this.state;
+  
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        this.setState({ email: '', password: '' });
+      } catch (error) {
+        if (error.code === "auth/user-not-found") {
+          alert("User not found...");
+        } else {
+          console.log(error);
         }
-      };
-    
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-    
-        setFormFields({ ...formFields, [name]: value });
-      };
-    
+      }
+    };
+  
+    handleChange = event => {
+      const { value, name } = event.target;
+  
+      this.setState({ [name]: value });
+    };
 
-    //google redirect
-    const [isShow, setShow] = useState();
-    const handleToggle = () => {
-        setShow(isShow);
-      };
-    
-    const GoogleButtonReddirect = () => {
-        return (
-            
-          <button 
-            onClick={signInWithGoogleRedirect} 
-            type="button"
-            style={{
-                width: '40%',
-                border:'none',
-                padding: '15px 20px',
-                backgroundColor:'teal',
-                color:'white',
-                cursor: 'pointer',
-                marginBottom:'5px',
-            }} >
-                {'GOOGLE SIGN IN'}
-          </button>
-        );
-      };
-    
-
-    return (
+    render(){return (
         <div>
-            
-        <Navbar/>
         <Container>
             <Wrapper>
                 <Title>SIGN IN</Title>
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={this.handleSubmit}>
                     <Input 
                         name='email'
                         type='email'
-                        onChange={handleChange}
-                        value={email}
-                        label='email'
+                        onChange={this.handleChange}
+                        value={this.state.email}
+                        placeholder='Email'
                         required/>
                     <Input 
                         name='password'
                         type='password'
-                        value={password}
-                        onChange={handleChange}
-                        label='password'
+                        value={this.state.password}
+                        onChange={this.handleChange}
+                        placeholder='Password'
                         required/>
                     <Button type='submit'>LOGIN</Button>
-                    <GoogleButtonReddirect onClick={handleToggle} />
+                    <GoogleButton onClick={this.state.googlePopup} />
                     <Link>FORGOT PASSWORD?</Link>
                     <Link>CREATE A NEW ACCOUNT</Link>
                 </Form>
@@ -158,7 +157,7 @@ const Login = () => {
         </Container>
         </div>
     );
-};
+};}
 
 
 

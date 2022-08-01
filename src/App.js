@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import {  
         BrowserRouter as Router,
           Routes,
@@ -11,15 +10,48 @@ import Register from './pages/Register';
 import Login from './pages/Login.jsx';
 import Cart from './pages/Cart';
 import Navbar from './components/Navbar';
+import { Component } from 'react';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+
 
 
 class App extends Component {
+  constructor(){
+    super();
 
+    this.state = {
+      currentUser:null
+    };
+  }
+  
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+
+        userRef.onSnapshot(snapShot => {
+          this.setState(
+            {
+            id: snapShot.id,
+            ...snapShot.data()
+            } 
+          );
+        });
+      }
+      this.setState({currentUser:userAuth});
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+  
 
     render(){
-    
-    return (
-      <Router>
+      return (
+      <Router currentUser={this.state.currentUser}>
         <div className="App">
           <Navbar/>
           <Routes>
@@ -34,7 +66,6 @@ class App extends Component {
       </Router>
       
   )};
-  
 }
 
 export default App;
