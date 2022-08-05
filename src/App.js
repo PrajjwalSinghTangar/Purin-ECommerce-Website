@@ -1,7 +1,8 @@
 import {  
         BrowserRouter as Router,
           Routes,
-          Route } from 'react-router-dom';
+          Route,
+          Navigate} from 'react-router-dom';
 import './App.css';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
@@ -44,6 +45,7 @@ class App extends Component {
   
 
     render(){
+      
       return (
       <Router >
         <div className="App">
@@ -53,10 +55,11 @@ class App extends Component {
               <Route path='/productlist' element={<ProductList/>} />
               <Route path='/product' element={<Product/>} />
               <Route path='/cart' element={<Cart/>} />
-              <Route path='/login' element={<Login/>} />
+              <Route path='/login' element={this.props.currentUser ? <Navigate to="/"/> : <Login/> }/>
               <Route path='/register' element={<Register/>} />
           </Routes>
         </div>
+        
       </Router>
       
   )};
@@ -66,4 +69,4 @@ const mapDispatchToProps = dispatch => ({
   setCurrentUser : user => dispatch(setCurrentUser(user))
 })
 
-export default connect(null, mapDispatchToProps )(App);
+export default connect(null, mapDispatchToProps)(App);

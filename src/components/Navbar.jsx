@@ -1,8 +1,8 @@
 import React, { Component } from "react";         //REACT
-import { Link } from "react-router-dom"; 
+import { Link, Outlet } from "react-router-dom"; 
 import styled from 'styled-components';
 import {auth } from "../firebase/firebase.utils";
-import { connect } from "react-redux/es/exports"; //REDUX
+import { connect } from "react-redux"; //REDUX
 import { Badge } from "antd";
 import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { mobile, tablet } from "../responsive";
@@ -109,6 +109,7 @@ class Navbar extends Component {
     
     
     render(){
+        
         return (
         <Container>
             {/*NAVBAR*/}
@@ -130,7 +131,7 @@ class Navbar extends Component {
                 <Right>
                     <div>
                     {
-                        auth.currentUser ?
+                        this.props.currentUser ?
                         (<div>
                             <CustomMenuItem onClick={this.state.signOut}/>
                         </div>)
@@ -150,7 +151,9 @@ class Navbar extends Component {
                     </MenuItem>
                 </Right>
             </Wrapper>
+            <Outlet/>
         </Container>
+
     );
 };
 }
