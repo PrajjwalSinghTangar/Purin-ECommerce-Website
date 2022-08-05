@@ -50,7 +50,7 @@ export const sliderItems = [
     },
     {
       id:2,
-      img:"https://i.postimg.cc/hj43yDXs/T-Shirts.png",
+      img:"https://i.postimg.cc/tgkBVKBx/Jackets.png",
     },
     {
       id:3,

@@ -1,11 +1,11 @@
-import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Badge } from "antd";
-import React, { Component } from "react";
+import React, { Component } from "react";         //REACT
+import { Link } from "react-router-dom"; 
 import styled from 'styled-components';
-import { mobile, tablet } from "../responsive";
-import { Link } from "react-router-dom";
 import {auth } from "../firebase/firebase.utils";
-
+import { connect } from "react-redux/es/exports"; //REDUX
+import { Badge } from "antd";
+import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { mobile, tablet } from "../responsive";
 
 //Styling With Styled Components
 const Container = styled.div`
@@ -140,6 +140,7 @@ class Navbar extends Component {
                             <MenuItem><Link to='/login'>Sign In</Link></MenuItem>
                         </div>)
 
+
                     }
                     </div>
                     <MenuItem>
@@ -154,4 +155,8 @@ class Navbar extends Component {
 };
 }
 
-export default Navbar;
+const mapStateToProps = state => ({
+    currentUser : state.user.currentUser
+})
+
+export default connect(mapStateToProps)(Navbar);

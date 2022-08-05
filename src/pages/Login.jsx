@@ -22,7 +22,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-    width: 25%;
+    width: 35%;
     padding: 20px;
     background-color:white;
     ${mobile({width: "75%"})}
@@ -44,11 +44,15 @@ const Input = styled.input`
     min-width:40%;
     margin: 10px 0;
     padding: 10px;
+    border:none;
+    border-bottom: 1px solid gray;
+    padding: 10px 10px 10px 5px;
+    
 `;
 
 
 const Button = styled.button`
-    width: 40%;
+    width: 100%;
     border:none;
     padding: 15px 20px;
     background-color:teal;
@@ -66,42 +70,18 @@ const Link = styled.a`
     cursor: pointer;
 `;
 
-const GoogleButton = () => {
-  return (  
-            <button 
-              onClick={signInWithGoogle} 
-              type="button"
-              style={{
-                  width: '40%',
-                  border:'none',
-                  padding: '15px 20px',
-                  backgroundColor:'teal',
-                  color:'white',
-                  cursor: 'pointer',
-                  marginBottom:'5px',
-              }} >
-                  {'GOOGLE SIGN IN'}
-            </button>
-          );
-};
-    
-
 
 class Login extends Component {
     constructor(){
     super()
 
     this.state={
-      googlePopup:'',
       email: '',
       password: ''
       }
     }
 
-    componentDidMount() {
-      //google Popup
-      this.setState({googlePopup:true})
-    }
+
     
     //email 
     handleSubmit = async event => {
@@ -123,6 +103,7 @@ class Login extends Component {
   
     handleChange = event => {
       const { value, name } = event.target;
+      console.log(value,name)
   
       this.setState({ [name]: value });
     };
@@ -147,8 +128,10 @@ class Login extends Component {
                         onChange={this.handleChange}
                         placeholder='Password'
                         required/>
-                    <Button type='submit'>LOGIN</Button>
-                    <GoogleButton onClick={this.state.googlePopup} />
+                    <div style={{display:'flex',flexDirection:'row'}}>
+                    <Button type='submit' style={{marginRight:'10px '}}>LOGIN</Button>
+                    <Button onClick={signInWithGoogle}>GOOGLE SIGN IN</Button>
+                    </div>
                     <Link>FORGOT PASSWORD?</Link>
                     <Link>CREATE A NEW ACCOUNT</Link>
                 </Form>
