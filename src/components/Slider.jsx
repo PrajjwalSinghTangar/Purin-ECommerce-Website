@@ -64,12 +64,16 @@ const Image = styled.img`
 const InfoContainer = styled.div`
     flex: 1;
     padding: 50px;
-    ${tablet({position:'absolute', top:"0",bottom: "0", margin: "auto"})}
+    ${tablet({
+        position:'absolute', 
+        top:"0",
+        bottom: "0", 
+        margin: "auto"})}
 `;
 
 const Title = styled.h1`
     font-size: 70px;
-    ${tablet({fontSize: "45px"})}
+    ${tablet({fontSize: "35px", textAlign:"center"})}
 `;
 
 const Desc = styled.p`
@@ -77,7 +81,7 @@ const Desc = styled.p`
     font-size:20px;
     font-weight:500;
     letter-spacing:3px;
-    ${tablet({fontSize: "15px", width: "50vw"})}
+    ${tablet({fontSize: "15px", width: "80vw", textAlign: "center"})}
 `;
 
 const Button = styled.button`
@@ -85,6 +89,7 @@ const Button = styled.button`
     font-size:20px;
     background-color:transparent;
     cursor:pointer;
+    ${tablet()}
 `;
 
 const Slider = () => {
